@@ -1,0 +1,7 @@
+
+
+storage-bucket-name: my-bucket
+data-ingested-path: /data/ingested/
+data-processed-path: /data/processed/
+data-training-ready-path: /data/training-ready/
+

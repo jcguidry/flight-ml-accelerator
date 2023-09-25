@@ -1,0 +1,45 @@
+name: Deploy Dataproc Preprocessing Job
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - 'preprocess/**'  # Only run the workflow when files in preprocess are changed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: preprocess
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - name: Create Dataproc cluster if it doesn't exist
+      run: |
+        if ! gcloud dataproc clusters describe cluster-highmem-1 --region us-east1; then
+          gcloud dataproc clusters create cluster-highmem-1 --region us-east1 \
+          --single-node --master-machine-type e2-highmem-2 --master-boot-disk-size 1000 --image-version 2.1-debian11 \
+          --max-idle 7200s --scopes 'https://www.googleapis.com/auth/cloud-platform' --project aia-ds-accelerator-flight-1 \
+          --enable-component-gateway --optional-components JUPYTER \
+          --properties spark:spark.jars.packages=io.delta:delta-core_2.12:2.1.1
+        fi
+
+    - name: Upload script to GCS
+      run: |
+        gsutil cp preprocess/src/flights_preprocess.py gs://flight-dev/DE/
+
+    - name: Submit Dataproc job
+      run: |
+        gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights_preprocess.py \
+        --cluster=cluster-highmem-1 --region=us-east1 --async
