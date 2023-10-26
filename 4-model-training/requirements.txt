@@ -1,0 +1,5 @@
+deltalake== 0.10.0
+gcsfs==2023.6.0
+pandas==2.0.3
+seaborn==0.12.2
+matplotlib==3.7.2

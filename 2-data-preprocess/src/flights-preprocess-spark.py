@@ -6,7 +6,7 @@
 # Enable / Disable Write Modes
 
 enable_ingest = True # load which table?
-enable_processed = True
+enable_processed = False
 
 enable_batch = False # load it how?
 enable_stream = True
@@ -97,6 +97,9 @@ else:
     .config("spark.sql.shuffle.partitions", 10)
     .config("spark.memory.fraction", 0.1)
     .config("spark.memory.storageFraction", 0.5)
+
+    .config("spark.executor.memory", "24g") 
+    .config("spark.driver.memory", "6g") 
     
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
@@ -249,7 +252,7 @@ if enable_ingest: # loads raw JSONs to Delta Table
                  .schema(schema_raw)
                  .option("encoding", "UTF-8")
                  .option("multiLine", True)
-                 .option("maxFilesPerTrigger", 1)
+                 .option("maxFilesPerTrigger", 10)
                  .json(gcs_path_raw)
 
             .pipe(ingest_data_processing) # processing here
@@ -342,7 +345,7 @@ if enable_processed: # loads raw JSONs to Delta Table
         df_proc = (
             spark.readStream
                  .format("delta")
-                 .option("maxFilesPerTrigger", 1) \
+                 .option("maxFilesPerTrigger", 10) \
                  .load(gcs_path_ingested_stream)
 
             .pipe(flights_processing, streaming=True) # processing here
