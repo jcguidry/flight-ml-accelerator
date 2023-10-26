@@ -1,0 +1,38 @@
+
+name: Deploy to Google Cloud Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '1-data-ingest-service'  # Only run the workflow when files in preprocess are changed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    - name: Deploy to Cloud Functions
+      uses: google-github-actions/deploy-cloud-functions@v1
+      with:
+        name:  flight-ml-ingest-snapshot-3
+        entry_point: ingest
+        source_dir: src
+        runtime: python310
+        event_trigger_type: google.pubsub.topic.publish
+        event_trigger_resource: projects/aia-ds-accelerator-flight-1/topics/ingest-flight-snapshot-trigger
+        service_account_email: flight-ml-demo-general@aia-ds-accelerator-flight-1.iam.gserviceaccount.com
+        secret_environment_variables: |
+          FLIGHTAWARE_API_KEY=projects/673433729049/secrets/flight-aware-api-key/versions/1
+          GCP_CREDENTIALS_JSON_ENCODED=projects/673433729049/secrets/aia-service-acct-json-encoded/versions/1
+        memory_mb: 512MB
+        deploy_timeout: 300
+
