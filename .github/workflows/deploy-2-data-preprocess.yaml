@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-        - 'preprocess/**'  # Only run the workflow when files in preprocess are changed
+        - '2-data-preprocess/**'  # Only run the workflow when files in preprocess are changed
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
       with:
-        sparse-checkout: preprocess
+        sparse-checkout: 2-data-preprocess
 
     - id: 'auth'
       uses: 'google-github-actions/auth@v1'
@@ -37,9 +37,9 @@ jobs:
 
     - name: Upload script to GCS
       run: |
-        gsutil cp preprocess/src/flights_preprocess.py gs://flight-dev/DE/
+        gsutil cp 2-data-preprocess/src/flights-preprocess-spark.py gs://flight-dev/DE/
 
     - name: Submit Dataproc job
       run: |
-        gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights_preprocess.py \
+        gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights-preprocess-spark.py \
         --cluster=cluster-highmem-1 --region=us-east1 --async
