@@ -18,9 +18,8 @@ pd.set_option('display.max_rows', 50)
 
 from google.oauth2 import service_account
 from google.cloud import firestore
-from google.cloud import bigquery
-from pandas_gbq import gbq
 from google.cloud import pubsub_v1
+from google.cloud import storage
 
 from datetime import datetime as dt
 from datetime import timedelta 
@@ -131,9 +130,6 @@ def datatype_cleanup(df):
 # In[5]:
 
 
-import pandas as pd
-from google.cloud import storage
-
 def write_to_gcs(df, bucket_name, blob_name, client):
     # client = storage.Client()
     bucket = client.get_bucket(bucket_name)
@@ -148,7 +144,7 @@ def write_to_gcs(df, bucket_name, blob_name, client):
                     blob.upload_from_string(flight_df.to_json(orient='records'))
 
 
-# In[6]:
+# In[7]:
 
 
 def main(identifier):
@@ -166,7 +162,6 @@ def main(identifier):
     # ------ GCP SERVICES CLIENTS ------
     project_id = 'aia-ds-accelerator-flight-1'
 
-    # bigquery_client = bigquery.Client(credentials=gcp_credentials, project=project_id)
     # pubsub_client = pubsub_v1.PublisherClient(credentials= gcp_credentials)
     firestore_client = firestore.Client(credentials=gcp_credentials, project=project_id)
     storage_client = storage.Client(credentials=gcp_credentials, project=project_id)
@@ -182,11 +177,6 @@ def main(identifier):
     query_start = (current_time_raw - timedelta(hours=lookback_hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
     query_end = (current_time_raw + timedelta(hours=lookfoward_hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    # ------ BIGQUERY OUTPUT PARAMETERS ------
-    # dataset_id = 'flightaware'
-    # table_id = 'flightsummary_raw'
-    # # BigQuery output table name
-    # table_ref_out = f"{project_id}.{dataset_id}.{table_id}"
 
     # ------ PUBSUB OUTPUT PARAMETERS ------
     # topic_name = "flight-summary-ingest-raw"
@@ -230,14 +220,6 @@ def main(identifier):
     except Exception as e:
         logging.error(f"error when publishing to pubsub: {e}")
 
-    # Write to BigQuery
-    # try:
-    #     # Append the data to the table. If the table doesn't exist, create it.
-    #     gbq.to_gbq(df, table_ref_out, project_id=project_id, if_exists='append', credentials=gcp_credentials)
-    # except Exception as e:
-    #     logging.error(f"error when publishing to bigquery: {e}")
-
-
     # Write to PubSub
     # try:
     #   json_data = df.to_json(orient='records', lines=True)    
@@ -255,7 +237,7 @@ def main(identifier):
     update_scheduled_out(scheduled_out_dict.keys(), scheduled_out_dict.values(), firestore_client)
 
 
-# In[7]:
+# In[8]:
 
 
 # Performing the execution in here prevents main() from being called when the module is imported

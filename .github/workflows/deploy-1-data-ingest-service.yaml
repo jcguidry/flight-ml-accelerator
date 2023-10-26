@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - '1-data-ingest-service'  # Only run the workflow when files in preprocess are changed
+      - '1-data-ingest-service/**'  # Only run the workflow when files in preprocess are changed
 
 jobs:
   deploy:

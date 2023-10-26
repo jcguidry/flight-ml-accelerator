@@ -1,4 +1,5 @@
 import requests
+import base64
 import json
 from datetime import datetime as dt
 from typing import Dict, Any
@@ -25,9 +26,6 @@ class FlightAwareAPI:
             raise requests.HTTPError(f"Error: {response.status_code}, {response.text}")
         
 
-
-
-import base64
 
 class JSON_EncoderDecoder():
     """
