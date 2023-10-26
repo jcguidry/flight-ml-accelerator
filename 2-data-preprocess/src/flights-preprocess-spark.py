@@ -12,7 +12,7 @@ enable_batch = False # load it how?
 enable_stream = True
 
 debug = False # (enables batch reads only)
-cold_start = True # if creating both streaming tables for the first time.
+cold_start = False # if creating both streaming tables for the first time, or to overwrite tables.
 
 # I/0 Paths
 
