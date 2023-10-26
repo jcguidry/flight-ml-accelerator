@@ -252,7 +252,7 @@ if enable_ingest: # loads raw JSONs to Delta Table
                  .schema(schema_raw)
                  .option("encoding", "UTF-8")
                  .option("multiLine", True)
-                 .option("maxFilesPerTrigger", 500)
+                 .option("maxFilesPerTrigger", 200)
                  .json(gcs_path_raw)
 
             .pipe(ingest_data_processing) # processing here
@@ -270,7 +270,7 @@ if enable_ingest: # loads raw JSONs to Delta Table
 
         if cold_start:
             # wait for ingested table to write records before starting processed table
-            time.sleep(45) 
+            time.sleep(60*5)
         
         # streaming_query_ingest.awaitTermination()
         
@@ -345,7 +345,7 @@ if enable_processed: # loads raw JSONs to Delta Table
         df_proc = (
             spark.readStream
                  .format("delta")
-                 .option("maxFilesPerTrigger", 500) \
+                 .option("maxFilesPerTrigger", 200) \
                  .load(gcs_path_ingested_stream)
 
             .pipe(flights_processing, streaming=True) # processing here
