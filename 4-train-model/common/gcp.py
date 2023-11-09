@@ -11,6 +11,7 @@ class GCPClient:
     def __init__(self):
         self.creds_json = self.get_gcp_creds_json()
         self.storage_client = self.init_storage_client()
+        self.creds_encoded = self.get_gcp_creds_encoded()
         
     def get_gcp_creds_json(self):
         load_dotenv()
@@ -22,3 +23,7 @@ class GCPClient:
         gcp_credentials = service_account.Credentials.from_service_account_info(self.creds_json)
         storage_client = storage.Client(credentials=gcp_credentials)
         return storage_client
+    
+    def get_gcp_creds_encoded(self):
+        load_dotenv()
+        return os.getenv("GCP_CREDENTIALS_JSON_ENCODED")
