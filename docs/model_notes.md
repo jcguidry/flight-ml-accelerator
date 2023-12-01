@@ -1,12 +1,12 @@
-As far as Estimated Time of Arrival (ETA) is concerned, there are multiple modeling techniques and paradigmns that can be used to predict the ETA of a given trip.
+### As far as Estimated Time of Arrival (ETA) is concerned, there are multiple modeling techniques and paradigmns that can be used to predict the ETA of a given trip.
 
-The possible approaches are conditioned by following factors:
+- The possible approaches are conditioned by following factors:
     - Desired time of use: Is the trip in the future, or is it in progress? (i.e. when the ETA is requested)
     - Available data: What is the data like? How are events represented?
     - Desired granularity: Should the trip be broken into segments? (i.e. is there a scheduled sequence of events?)
     - Desired Output: Single ETA, sequence of ETAs, distribution, probability, or time window?
 
-There are the main approaches to modeling ETA:
+- There are the main approaches to modeling ETA:
     - **Schedule-based**: The ETA is modeled as a **function of a sequence of events/segments (a schedule)**.
         Usage:
             - Ideal for predicting the ETA of a trip in the future.
