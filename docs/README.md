@@ -29,10 +29,7 @@
 3) A script will deploy cloud schedulers for these selected flights.
     - These schedulers will then activate a Cloud Function `data-ingest-service` to collect and store the flight statuses from the `flights{ident}` endpoint and ingest into a Delta Table.
 
-
-
-Another daily task will update cloud schedulers for these selected flights.
-These schedulers will then activate a Cloud Function to collect and store the flight data in a Delta Table.
+4) A spark streaming job ingest flight statuses into a delta table, and perform preprocessing and de-duplications
 
 ### Data Sources
 - flights/{ident}
