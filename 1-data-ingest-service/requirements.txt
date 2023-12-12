@@ -1,3 +1,4 @@
+ipykernel
 functions-framework==3.*
 requests
 python-dotenv==1.0.0

@@ -1,30 +1,9 @@
-import requests
+# gcp.py
+import os
+from google.oauth2 import service_account
+from google.cloud import storage
 import json
-from datetime import datetime as dt
-from typing import Dict, Any
-
-class FlightAwareAPI:
-    
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.base_url = 'https://aeroapi.flightaware.com/aeroapi'
-
-    def _build_headers(self):
-        return {
-            'x-apikey': self.api_key,
-        }
-
-    def query(self, endpoint: str, **kwargs) -> Dict[str, Any]:
-        url = self.base_url + endpoint
-        headers = self._build_headers()
-        response = requests.get(url, headers=headers, params=kwargs)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise requests.HTTPError(f"Error: {response.status_code}, {response.text}")
-        
-
+from dotenv import load_dotenv
 import base64
 
 class JSON_EncoderDecoder():
@@ -60,30 +39,44 @@ class JSON_EncoderDecoder():
 
 
 
-# gcp.py
-import os
-from google.oauth2 import service_account
-from google.cloud import storage
-import json
-from dotenv import load_dotenv
 
 class GCPClient:
+    """
+    Instantiate a GCP client object for accessing GCP services,
+
+    Attributes:
+        creds_json (dict): GCP credentials JSON
+        storage_client (google.cloud.storage.client.Client): GCP storage client
+        creds_encoded (str): GCP credentials JSON encoded as a string
+    
+    Args:
+        None, just loads credentials from .env file
+
+    """
     def __init__(self):
-        self.creds_json = self.get_gcp_creds_json()
-        self.storage_client = self.init_storage_client()
         self.creds_encoded = self.get_gcp_creds_encoded()
-        
-    def get_gcp_creds_json(self):
+        self.creds_json = self.get_gcp_creds_json()
+        self.credentials = self.init_credentials()
+        self.storage_client = self.init_storage_client()
+
+    def get_gcp_creds_encoded(self):
+        ''' returns GCP credentials JSON encoded as a string '''
         load_dotenv()
-        gcp_creds_encoded = os.getenv("GCP_CREDENTIALS_JSON_ENCODED")
-        gcp_creds_json = JSON_EncoderDecoder(gcp_creds_encoded).decode().get()
+        return os.getenv("GCP_CREDENTIALS_JSON_ENCODED")
+
+    def get_gcp_creds_json(self):
+        ''' returns GCP credentials JSON as a dict '''
+        gcp_creds_json = JSON_EncoderDecoder(self.creds_encoded).decode().get()
         return gcp_creds_json
 
+    def init_credentials(self):
+        ''' primary authentication method for GCP services '''
+        gcp_credentials = service_account.Credentials.from_service_account_info(self.creds_json)
+        return gcp_credentials
+
     def init_storage_client(self):
+        ''' storage client for accessing GCP storage buckets '''
         gcp_credentials = service_account.Credentials.from_service_account_info(self.creds_json)
         storage_client = storage.Client(credentials=gcp_credentials)
         return storage_client
     
-    def get_gcp_creds_encoded(self):
-        load_dotenv()
-        return os.getenv("GCP_CREDENTIALS_JSON_ENCODED")

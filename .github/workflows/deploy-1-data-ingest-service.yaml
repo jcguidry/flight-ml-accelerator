@@ -25,7 +25,7 @@ jobs:
       with:
         name: flight-ml-ingest-snapshot-3
         entry_point: ingest
-        source_dir: 1-data-ingest-service/src
+        source_dir: 1-data-ingest-service
         runtime: python310
         event_trigger_type: google.pubsub.topic.publish
         event_trigger_resource: projects/aia-ds-accelerator-flight-1/topics/ingest-flight-snapshot-trigger

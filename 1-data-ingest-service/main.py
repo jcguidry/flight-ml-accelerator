@@ -3,7 +3,7 @@ import base64
 import logging
 import functions_framework
 
-from ingest import main
+from src.ingest import main
 
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
