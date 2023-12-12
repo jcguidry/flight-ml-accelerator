@@ -30,4 +30,12 @@
 
 ### Outstanding Tasks
 
-- [ ] asd
+- Ingestion
+- [x] Refactor cloud functions to use modules
+- [ ] Modify cloud function to accept a list of flight idendifiers in JSON payload
+- [ ] Convert pandas datatypes to pyarrow
+- [ ] Convert bucket write from JSON to parquet
+- [ ] Use new partition structure (origin airport, flight, datetime), update reads downstream.
+- [ ] Write notebook/script to source list of flight identifiers
+- [ ] Write notebook/script to generate schedulers based on list of flights.
+- [ ] Add historical ingestion capability
