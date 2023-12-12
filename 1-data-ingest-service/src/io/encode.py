@@ -19,7 +19,7 @@ def decode_pubsub_message(pubsub_message):
     """
     try:
         decoded_str = base64.b64decode(pubsub_message).decode('utf-8')
-        return json.loads(json.loads(decoded_str))
+        return json.loads(decoded_str)
     except Exception as e:
         logging.error(f"Error in decoding: {e}")
         return None
