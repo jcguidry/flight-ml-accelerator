@@ -24,7 +24,7 @@ jobs:
       uses: google-github-actions/deploy-cloud-functions@v1
       with:
         name: flight-ml-ingest-snapshot-3
-        entry_point: ingest
+        entry_point: main
         source_dir: 1-data-ingest-service
         runtime: python310
         event_trigger_type: google.pubsub.topic.publish

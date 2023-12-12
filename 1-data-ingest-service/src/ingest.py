@@ -4,12 +4,15 @@
 # In[1]:
 
 
-# # For local testing ONLY
-# import sys
-# try:
-#     sys.path.remove('')
-#     sys.path.append('../')
-# except: pass
+import os
+import sys
+
+# if notebook is being run from src directory, change to root directory
+if os.getcwd().split(os.sep)[-1] == 'src':
+    try:
+        sys.path.remove('')
+        sys.path.append('../')
+    except: pass
 
 
 # In[2]:
@@ -49,7 +52,14 @@ from src.io.write import write_to_gcs
 # In[4]:
 
 
-def main(identifier):
+def ingest(df):
+    """
+    Given a dataframe of flight identifiers and ingestion options, 
+    query the FlightAware API for flight data and write to GCS.
+    """
+
+    identifier = df.iloc[0]['flight_ident']
+
 
     # ------ PARAMETERS ------ 
     lookback_hours = 7*24 # how many hours back to query, based on the flight's actual departure
@@ -87,7 +97,7 @@ def main(identifier):
 
 
     # ------ STATE MANAGEMENT ------
-    # --- Obtain and last run timestamp(s) to the dataframe
+    # --- Obtain the last run timestamp(s) for the flight_id(s) in the query.
     last_run_ts = get_last_run_timestamp(identifier, firestore_client)
     df['last_run_ts'] = last_run_ts
     print(f'last query run timestamp: {last_run_ts}')
@@ -98,7 +108,7 @@ def main(identifier):
     df['last_scheduled_out_ts'] = df['fa_flight_id'].map(scheduled_out_prev_dict)
 
 
-    # ------ WRITE ------
+        # ------ WRITE ------
     try:
         write_to_gcs(df, bucket_name, blob_name, storage_client)
     except Exception as e:
@@ -115,12 +125,23 @@ def main(identifier):
 # In[5]:
 
 
-# Performing the execution in here prevents main() from being called when the module is imported
-# and it allows us to run this file directly from the command line
+# Prevents main() from being called when the module is imported
 
 if __name__ == "__main__":
-    main(identifier='AA2563')
-    
-    # df = main(identifier='AA2563')
-    # df
+    pass
+
+
+# In[6]:
+
+
+# TESTING
+
+# # begin with a list of flight identifiers, as dictionary
+# flight_ident_list = [{'flight_ident': 'AA2563', 'ingest_type': 'latest'},
+#                     {'flight_ident': 'AA2227', 'ingest_type': 'latest'},]
+
+# #convert to dataframe, with schema
+# df = pd.DataFrame(flight_ident_list)#.convert_dtypes(dtype_backend='pyarrow')
+
+# ingest(df)
 
