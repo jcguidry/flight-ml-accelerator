@@ -32,6 +32,7 @@ def create_test_data():
     
     payload = {'message': {'data': df_json_encoded}}
 
+
     # create object with data attribute, like a CloudEvent
     mock_cloud_event = MockCloudEvent(payload)
 
