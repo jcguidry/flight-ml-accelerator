@@ -1,4 +1,4 @@
-![img](docs/airplane-pic.jpeg)
+![img](docs/assets/airplane-pic.jpeg)
 
 # Real-Time Flight Data Pipeline and ML ETA System
 
@@ -8,4 +8,4 @@ The primary source of data is the [FlightAware API](https://www.flightaware.com/
 
 # Architecture (for now)
 
-![img](docs/GCP-flight-streaming-datalake.jpg)
+![img](docs/assets/GCP-flight-streaming-datalake.jpg)
